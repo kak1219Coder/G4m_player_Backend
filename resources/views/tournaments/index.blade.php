@@ -27,7 +27,7 @@
                         <th>#</th>
                         <th>Jeu</th>
                         <th>Titre</th>
-                        <th>Date</th>
+                        <th>Période</th>
                         <th>Mode</th>
                         <th>Statut</th>
                         <th>Lieu</th>
@@ -41,7 +41,15 @@
                             <td>{{ $competition->id }}</td>
                             <td>{{ $competition->game?->name }}</td>
                             <td>{{ $competition->title }}</td>
-                            <td>{{ $competition->date ? \Carbon\Carbon::parse($competition->date)->format('d/m/Y H:i') : '' }}</td>
+                            <td>
+                                @if($competition->start_date && $competition->end_date)
+                                    {{ \Carbon\Carbon::parse($competition->start_date)->format('d/m/Y H:i') }}
+                                    &rarr;
+                                    {{ \Carbon\Carbon::parse($competition->end_date)->format('d/m/Y H:i') }}
+                                @elseif($competition->start_date)
+                                    {{ \Carbon\Carbon::parse($competition->start_date)->format('d/m/Y H:i') }}
+                                @endif
+                            </td>
                             <td>
                                 @if($competition->mode)
                                     <span class="badge bg-secondary">{{ ucfirst($competition->mode) }}</span>

@@ -53,9 +53,16 @@
                     @enderror
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="date" class="form-label">Date & Heure <span class="text-danger">*</span></label>
-                    <input type="datetime-local" name="date" id="date" class="form-control" value="{{ old('date') }}" required>
-                    @error('date')
+                    <label for="start_date" class="form-label">Date & Heure de début <span class="text-danger">*</span></label>
+                    <input type="datetime-local" name="start_date" id="start_date" class="form-control" value="{{ old('start_date') }}" required>
+                    @error('start_date')
+                        <div class="alert alert-danger mt-2">{{ $message }}</div>
+                    @enderror
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="end_date" class="form-label">Date & Heure de fin <span class="text-danger">*</span></label>
+                    <input type="datetime-local" name="end_date" id="end_date" class="form-control" value="{{ old('end_date') }}" required>
+                    @error('end_date')
                         <div class="alert alert-danger mt-2">{{ $message }}</div>
                     @enderror
                 </div>

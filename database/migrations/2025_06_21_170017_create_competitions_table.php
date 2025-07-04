@@ -16,7 +16,8 @@ return new class extends Migration
         $table->foreignId('game_id')->constrained('games')->onDelete('cascade');
         $table->string('title');
         $table->text('description')->nullable();
-        $table->dateTime('date');
+        $table->dateTime('start_date'); // Date de début
+        $table->dateTime('end_date');   // Date de fin
         $table->enum('mode', ['solo', 'duo', 'squad'])->nullable(); // Nouveau
         $table->integer('max_participants'); // Nouveau
         $table->integer('current_participants')->default(0); // Nouveau
