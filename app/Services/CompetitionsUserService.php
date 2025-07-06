@@ -5,8 +5,6 @@ namespace App\Services;
 use App\Models\Competition;
 use App\Models\CompetitionsUser;
 use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Models\Team;
 
 class CompetitionsUserService
 {
@@ -37,9 +35,10 @@ class CompetitionsUserService
     {
         return DB::transaction(function () use ($competitionId, $userId) {
             $competition = Competition::findOrFail($competitionId);
-
+            
             // Vérifier si l'utilisateur est déjà inscrit
             $existingParticipation = $this->checkExistingParticipation($competitionId, $userId);
+            
             if ($existingParticipation) {
                 return [
                     'success' => false,
@@ -48,40 +47,24 @@ class CompetitionsUserService
                     'status_code' => 409
                 ];
             }
-
+            
             // Vérifier si la compétition peut accepter des participants
             $canRegister = $this->canUserRegister($competition);
+            
             if (!$canRegister['success']) {
                 return $canRegister;
             }
-
-            // 🔹 Étape 1 : Créer la team avec le nom du user
-            $user = User::findOrFail($userId);
-            $team = Team::create([
-                'name' => $user->name,
-                'logo' => null,
-                'group_id' => null
-            ]);
-
-            // 🔹 Étape 2 : Associer le joueur à l’équipe
-            $team->players()->attach($userId);
-
-            // 🔹 Étape 3 : Inscription dans competitions_users
+            
+            // Créer l'inscription
             $competitionUser = CompetitionsUser::create([
                 'competition_id' => $competitionId,
                 'user_id' => $userId,
                 'points' => 0,
             ]);
-
-            // 🔹 Étape 4 : Mise à jour du nombre de participants
+            
+            // Mettre à jour la compétition
             $this->updateCompetitionAfterRegistration($competition);
-
-            // 🔹 Étape 5 : Si c’est une Cup, on appelle CupService quand la compétition est pleine
-            if (strtolower($competition->title) === 'cup' && $competition->fresh()->current_participants >= $competition->max_participants) {
-                $cupService = new CupService();
-                $cupService->generateFirstRound($competition->fresh());
-            }
-
+            
             return [
                 'success' => true,
                 'message' => 'Inscription réussie',
